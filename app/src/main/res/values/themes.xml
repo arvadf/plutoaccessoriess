@@ -1,0 +1,56 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Modern Minimalist Theme -->
+    <style name="Theme.PlutoAccessories" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/pluto_gold</item>
+        <item name="colorPrimaryVariant">@color/pluto_gold_dark</item>
+        <item name="colorOnPrimary">@color/white</item>
+        
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/pluto_accent</item>
+        <item name="colorSecondaryVariant">@color/pluto_accent</item>
+        <item name="colorOnSecondary">@color/white</item>
+        
+        <!-- Background colors -->
+        <item name="android:colorBackground">@color/pluto_background</item>
+        <item name="colorSurface">@color/pluto_surface</item>
+        <item name="colorOnBackground">@color/pluto_text_primary</item>
+        <item name="colorOnSurface">@color/pluto_text_primary</item>
+        
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">@color/white</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
+        
+        <!-- Material Components Shape -->
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.PlutoAccessories.SmallComponent</item>
+        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.PlutoAccessories.MediumComponent</item>
+        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.PlutoAccessories.LargeComponent</item>
+        
+        <!-- Button Style -->
+        <item name="materialButtonStyle">@style/Widget.PlutoAccessories.Button</item>
+    </style>
+    
+    <!-- Shape Appearances -->
+    <style name="ShapeAppearance.PlutoAccessories.SmallComponent" parent="ShapeAppearance.MaterialComponents.SmallComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">@dimen/corner_small</item>
+    </style>
+    
+    <style name="ShapeAppearance.PlutoAccessories.MediumComponent" parent="ShapeAppearance.MaterialComponents.MediumComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">@dimen/corner_medium</item>
+    </style>
+    
+    <style name="ShapeAppearance.PlutoAccessories.LargeComponent" parent="ShapeAppearance.MaterialComponents.LargeComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">@dimen/corner_large</item>
+    </style>
+    
+    <!-- Button Styles -->
+    <style name="Widget.PlutoAccessories.Button" parent="Widget.MaterialComponents.Button">
+        <item name="cornerRadius">@dimen/corner_medium</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:letterSpacing">0.02</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+</resources>
