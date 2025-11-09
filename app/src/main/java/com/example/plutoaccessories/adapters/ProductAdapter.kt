@@ -18,6 +18,9 @@ class ProductAdapter(
     private val onProductClick: (Product) -> Unit
 ) : RecyclerView.Adapter<ProductAdapter.ProductViewHolder>() {
 
+    // Definisikan base URL untuk gambar di sini
+    private val baseImageUrl = "http://192.168.1.6/pluto_api/uploads/"
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_product, parent, false)
         return ProductViewHolder(view)
@@ -27,9 +30,7 @@ class ProductAdapter(
         val product = productList[position]
         holder.bind(product)
         
-        // Add click animation
         holder.itemView.setOnClickListener {
-            // Scale animation on click
             it.animate()
                 .scaleX(0.95f)
                 .scaleY(0.95f)
@@ -56,15 +57,20 @@ class ProductAdapter(
         fun bind(product: Product) {
             tvProductName.text = product.namaProduk
             
-            // Format price with thousand separator
             val priceFormat = NumberFormat.getNumberInstance(Locale("id", "ID"))
             tvProductPrice.text = "Rp ${priceFormat.format(product.harga)}"
             
-            // Load image with smooth transition
+            val fullImageUrl = if (product.gambarUrl.isNullOrEmpty()) {
+                null
+            } else {
+                baseImageUrl + product.gambarUrl
+            }
+
+            // Muat gambar dengan URL lengkap, dan gunakan placeholder generik dari sistem
             Glide.with(itemView.context)
-                .load(product.gambarUrl)
-                .placeholder(R.drawable.sample_product)
-                .error(R.drawable.sample_product)
+                .load(fullImageUrl)
+                .placeholder(R.drawable.ic_category_placeholder) // Placeholder abu-abu
+                .error(R.drawable.ic_category_placeholder)       // Gambar error jika gagal muat
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .into(ivProductImage)
         }

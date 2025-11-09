@@ -38,6 +38,7 @@
         <activity android:name=".activities.TransactionsActivity" />
         <activity android:name=".activities.ProfileActivity" />
         <activity android:name=".activities.OrderHistoryActivity" />
+        <activity android:name=".activities.OrderDetailActivity" />
     </application>
 
 </manifest>

@@ -6,9 +6,9 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.plutoaccessories.R
 import com.example.plutoaccessories.models.CartItem
-import com.bumptech.glide.Glide
 import com.example.plutoaccessories.utils.FormatHelper
 
 class CartAdapter(
@@ -16,12 +16,16 @@ class CartAdapter(
     private val onRemoveClick: (CartItem) -> Unit
 ) : RecyclerView.Adapter<CartAdapter.CartViewHolder>() {
 
+    // Definisikan base URL untuk gambar, samakan dengan ProductAdapter
+    private val baseImageUrl = "http://192.168.1.6/pluto_api/uploads/"
+
     inner class CartViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val imgProduct: ImageView = view.findViewById(R.id.imgProductCart)
         val tvName: TextView = view.findViewById(R.id.tvNameCart)
         val tvPrice: TextView = view.findViewById(R.id.tvPriceCart)
         val tvQty: TextView = view.findViewById(R.id.tvQuantityCart)
-        val btnRemove: ImageView = view.findViewById(R.id.btnRemoveCart)
+        // Perbaiki tipe data dari ImageView menjadi View yang lebih umum untuk klik
+        val btnRemove: View = view.findViewById(R.id.btnRemoveCart)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CartViewHolder {
@@ -36,18 +40,18 @@ class CartAdapter(
         holder.tvPrice.text = item.harga.let { FormatHelper.formatRupiah(it) }
         holder.tvQty.text = "Qty: ${item.jumlah}"
 
-        val url = item.imageUrl
-        if (!url.isNullOrBlank()) {
-            Glide.with(holder.itemView)
-                .load(url)
-                .placeholder(R.drawable.sample_product)
-                .error(R.drawable.sample_product)
-                .into(holder.imgProduct)
-        } else if (item.gambarRes != null) {
-            holder.imgProduct.setImageResource(item.gambarRes)
+        // Logika memuat gambar yang sudah diperbaiki
+        val fullImageUrl = if (item.imageUrl.isNullOrBlank()) {
+            null
         } else {
-            holder.imgProduct.setImageResource(R.drawable.sample_product)
+            baseImageUrl + item.imageUrl
         }
+
+        Glide.with(holder.itemView.context)
+            .load(fullImageUrl)
+            .placeholder(R.drawable.ic_category_placeholder) // Gunakan placeholder generik
+            .error(R.drawable.ic_category_placeholder)       // Gunakan placeholder generik
+            .into(holder.imgProduct)
 
         // Tombol hapus
         holder.btnRemove.setOnClickListener {

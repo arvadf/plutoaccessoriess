@@ -32,6 +32,9 @@ class DetailProductActivity : AppCompatActivity() {
     private lateinit var btnBuy: Button
     private lateinit var btnAddToWishlist: Button
 
+    // Definisikan base URL untuk gambar di sini
+    private val baseImageUrl = "http://192.168.1.6/pluto_api/uploads/"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_detail_product)
@@ -72,15 +75,18 @@ class DetailProductActivity : AppCompatActivity() {
                         tvStock.text = "Stok: ${product.stok ?: 0}"
                         tvDesc.text = product.deskripsi ?: ""
 
-                        if (!product.gambarUrl.isNullOrBlank()) {
-                            Glide.with(this@DetailProductActivity)
-                                .load(product.gambarUrl)
-                                .placeholder(R.drawable.sample_product)
-                                .error(R.drawable.sample_product)
-                                .into(img)
+                        // Bangun URL lengkap dan muat gambar dengan placeholder yang benar
+                        val fullImageUrl = if (product.gambarUrl.isNullOrBlank()) {
+                            null
                         } else {
-                            img.setImageResource(R.drawable.sample_product)
+                            baseImageUrl + product.gambarUrl
                         }
+
+                        Glide.with(this@DetailProductActivity)
+                            .load(fullImageUrl)
+                            .placeholder(R.drawable.ic_category_placeholder) // Placeholder yang benar
+                            .error(R.drawable.ic_category_placeholder)       // Gambar error yang benar
+                            .into(img)
 
                         btnAdd.setOnClickListener { _ ->
                             val productId = product.idProduk
