@@ -9,7 +9,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 object ApiClient {
-    // Kembali ke URL localhost
+    // Gunakan IP Komputer di jaringan lokal, karena app dijalankan di HP Fisik
     private const val BASE_URL = "http://192.168.1.6/pluto_api/"
 
     private var retrofit: Retrofit? = null

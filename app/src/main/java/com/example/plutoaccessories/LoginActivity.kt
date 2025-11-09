@@ -7,20 +7,22 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.android.volley.Request
-import com.android.volley.Response
-import com.android.volley.VolleyError
-import com.android.volley.toolbox.StringRequest
-import com.android.volley.toolbox.Volley
 import com.example.plutoaccessories.databinding.ActivityLoginBinding
+import com.example.plutoaccessories.models.LoginResponse
+import com.example.plutoaccessories.network.ApiClient
+import com.example.plutoaccessories.network.ApiService
 import com.example.plutoaccessories.utils.SessionManager
-import org.json.JSONException
-import org.json.JSONObject
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
     private lateinit var session: SessionManager
+    private lateinit var apiService: ApiService
+
+    // Hapus companion object karena URL dikelola oleh ApiClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,6 +36,8 @@ class LoginActivity : AppCompatActivity() {
             return
         }
 
+        apiService = ApiClient.getClient().create(ApiService::class.java)
+
         binding.btnLogin.setOnClickListener { attemptLogin() }
         binding.tvRegister.setOnClickListener { 
             startActivity(Intent(this, RegisterActivity::class.java))
@@ -44,7 +48,7 @@ class LoginActivity : AppCompatActivity() {
         val email = binding.etEmail.text.toString().trim()
         val password = binding.etPassword.text.toString().trim()
 
-        Log.e("LOGIN_DATA", "Mengirim -> Email: [$email], Password: [$password]")
+        Log.d("LOGIN_DATA", "Mengirim -> Email: [$email], Password: [${password.replace(Regex("."), "*")}]")
 
         if (TextUtils.isEmpty(email)) {
             binding.etEmail.error = "Email wajib diisi"
@@ -60,62 +64,50 @@ class LoginActivity : AppCompatActivity() {
         binding.progLogin.visibility = View.VISIBLE
         binding.btnLogin.isEnabled = false
 
-        val stringRequest = object : StringRequest(
-            Request.Method.POST, LOGIN_URL,
-            Response.Listener { response ->
+        val loginCall = apiService.loginUser(email, password)
+        loginCall.enqueue(object : Callback<LoginResponse> {
+            override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
                 binding.progLogin.visibility = View.GONE
                 binding.btnLogin.isEnabled = true
-                Log.d("LOGIN_RESPONSE", "Response: $response")
 
-                try {
-                    val obj = JSONObject(response)
-                    val success = obj.optInt("success", 0)
-                    val message = obj.optString("message", "Terjadi kesalahan.")
-
-                    if (success == 1) {
-                        val user = obj.getJSONObject("user")
-                        val idUser = user.getInt("id_user")
-                        val nama = user.getString("nama")
-                        val userEmail = user.getString("email")
-                        val role = user.optString("role", "user")
-                        val alamat = user.optString("alamat")
-                        val noHp = user.optString("no_hp")
-
-                        session.createLoginSession(idUser, nama, userEmail, role, alamat, noHp)
-                        
-                        Toast.makeText(this, "Login berhasil. Selamat datang, $nama", Toast.LENGTH_SHORT).show()
-                        gotoAppropriateActivity(role)
-                        finish()
+                if (response.isSuccessful) {
+                    val loginResponse = response.body()
+                    if (loginResponse?.success == 1 && loginResponse.user != null) {
+                        val user = loginResponse.user
+                        if (user.idUser != null) {
+                            session.createLoginSession(
+                                user.idUser,
+                                user.nama,
+                                user.email,
+                                user.role,
+                                user.alamat,
+                                user.noHp
+                            )
+                            Toast.makeText(this@LoginActivity, "Login berhasil. Selamat datang, ${user.nama}", Toast.LENGTH_SHORT).show()
+                            gotoAppropriateActivity(user.role)
+                            finish()
+                        } else {
+                            Log.e("LOGIN_ERROR", "Login sukses tapi idUser dari server null.")
+                            Toast.makeText(this@LoginActivity, "Login Gagal: Data pengguna tidak lengkap dari server.", Toast.LENGTH_LONG).show()
+                        }
                     } else {
-                        Toast.makeText(this, "Login gagal: $message", Toast.LENGTH_LONG).show()
+                        val message = loginResponse?.message ?: "Username atau password salah."
+                        Toast.makeText(this@LoginActivity, "Login Gagal: $message", Toast.LENGTH_LONG).show()
                     }
-                } catch (e: JSONException) {
-                    e.printStackTrace()
-                    Toast.makeText(this, "Error parsing response: $response", Toast.LENGTH_LONG).show()
+                } else {
+                    val errorBody = response.errorBody()?.string() ?: "Terjadi kesalahan pada server."
+                    Log.e("LOGIN_ERROR", "Error Code: ${response.code()}, Body: $errorBody")
+                    Toast.makeText(this@LoginActivity, "Error: ${response.code()} - $errorBody", Toast.LENGTH_LONG).show()
                 }
-            },
-            Response.ErrorListener { error: VolleyError ->
+            }
+
+            override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
                 binding.progLogin.visibility = View.GONE
                 binding.btnLogin.isEnabled = true
-                val networkResponse = error.networkResponse
-                val errorMsg = if (networkResponse != null) {
-                    "Error code ${networkResponse.statusCode}: ${String(networkResponse.data)}"
-                } else {
-                    error.message ?: "Unknown Volley error"
-                }
-                Log.e("LOGIN_ERROR", errorMsg)
-                Toast.makeText(this, "Koneksi Gagal: $errorMsg", Toast.LENGTH_LONG).show()
+                Log.e("LOGIN_FAILURE", "Request Gagal: ", t)
+                Toast.makeText(this@LoginActivity, "Koneksi Gagal: ${t.message}", Toast.LENGTH_LONG).show()
             }
-        ) {
-            override fun getParams(): MutableMap<String, String>? {
-                val params = HashMap<String, String>()
-                params["email"] = email
-                params["password"] = password
-                return params
-            }
-        }
-
-        Volley.newRequestQueue(this).add(stringRequest)
+        })
     }
 
     private fun gotoAppropriateActivity(role: String?) {
@@ -125,9 +117,5 @@ class LoginActivity : AppCompatActivity() {
             Intent(this, MainActivity::class.java)
         }
         startActivity(intent)
-    }
-
-    companion object {
-        private const val LOGIN_URL = "http://192.168.1.6/pluto_api/login_user.php"
     }
 }
