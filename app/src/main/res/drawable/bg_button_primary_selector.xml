@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="true">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/pluto_gold_dark" />
+            <corners android:radius="@dimen/corner_medium" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/pluto_gold" />
+            <corners android:radius="@dimen/corner_medium" />
+        </shape>
+    </item>
+</selector>

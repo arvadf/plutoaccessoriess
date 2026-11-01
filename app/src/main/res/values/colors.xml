@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Minimalist Modern Palette -->
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+    
+    <!-- Primary Colors -->
+    <color name="pluto_gold">#D4AF37</color>
+    <color name="pluto_gold_dark">#B8941F</color>
+    <color name="pluto_gold_light">#E8D68A</color>
+    
+    <!-- Neutral Shades -->
+    <color name="pluto_background">#FAFAFA</color>
+    <color name="pluto_surface">#FFFFFF</color>
+    <color name="pluto_card">#F8F8F8</color>
+    
+    <!-- Text Colors -->
+    <color name="pluto_text_primary">#1A1A1A</color>
+    <color name="pluto_text_secondary">#6B6B6B</color>
+    <color name="pluto_text_muted">#9E9E9E</color>
+    
+    <!-- Accent Colors -->
+    <color name="pluto_accent">#2C2C2C</color>
+    <color name="pluto_danger">#E53935</color>
+    <color name="pluto_success">#4CAF50</color>
+    
+    <!-- Legacy Support -->
+    <color name="purple_200">#BB86FC</color>
+    <color name="purple_500">#6200EE</color>
+    <color name="purple_700">#3700B3</color>
+    <color name="teal_200">#03DAC5</color>
+    <color name="teal_700">#018786</color>
+    <color name="pluto_soft_gray">#F5F5F7</color>
+    <color name="pluto_primary">#D4AF37</color>
+</resources>
